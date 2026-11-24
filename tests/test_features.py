@@ -235,7 +235,9 @@ class Features(Base):
         txt = out.read_text(encoding="utf-8").replace("(corrigé)", "").replace("1. ", "1. sans fleche ", 1)
         txt = txt.replace(" => ", " ", 1)
         out.write_text(txt, encoding="utf-8")
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(SystemExit):  # étape malformée rejetée par merge()
+            store.apply_review_csv(self.d, out, self.m)
+        with self.assertRaises(SystemExit):  # relecteur absent de la liste blanche
             store.apply_review_csv(self.d, out, self.m, {"Autre": "IVQ"})
 
     def test_group_by_sprint_dry_run_and_trace(self):

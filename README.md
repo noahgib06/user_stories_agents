@@ -16,6 +16,9 @@ Configuration opencode v2 : `opencode.jsonc` (règles `permissions` ordonnées, 
 agents Markdown (`mode`, `steps`, `permissions`), commandes `.opencode/commands/` et **skills** `.opencode/skills/<id>/SKILL.md` :
 `ivq-story-format`, `ivq-test-matrix`, `ivq-human-review`, `ivq-elm-oslc` (chargés à la demande par les agents).
 
+## Documents d'entrée
+Déposez vos sources (CSV, Excel, Word, exports DOORS Next, JSON) dans `sources/` (contenu ignoré par git, rien n'est poussé), puis `/ivq-run sources/<fichier>`.
+
 ## Utilisation
 ```bash
 opencode                      # agent par défaut : orchestrateur

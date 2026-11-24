@@ -5,3 +5,5 @@ workspace/*
 .env
 elm_out/
 config/elm.json
+sources/*
+!sources/.gitkeep

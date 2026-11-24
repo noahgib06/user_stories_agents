@@ -44,6 +44,12 @@ Les listes dans une cellule CSV/Excel sont séparées par ` | ` ; critères : `A
 - **Recette uniquement** : `allowed_project_areas`, refus d'URL « prod », `ELM_ENV=recette`, `--confirm`, compte technique via `ELM_USER`/`ELM_PASSWORD` (permissions minimales côté ELM).
 - **Audit** : `workspace/journal.jsonl` (source, décision, version, date, statut), chaîné par hash (`audit-verify`). Les permissions opencode limitent aussi chaque agent à ses commandes/fichiers ; `review-set`/`review-apply` ne sont autorisés à aucun agent.
 
+## Documentation
+- [`docs/INSTALLATION.md`](docs/INSTALLATION.md) — prérequis, opencode V2, vérification, dépannage
+- [`docs/GUIDE_UTILISATEUR.md`](docs/GUIDE_UTILISATEUR.md) — du dépôt des sources à la traçabilité
+- [`docs/CONFIGURATION_ELM.md`](docs/CONFIGURATION_ELM.md) — projet de recette, compte technique, fabriques OSLC
+- [`docs/SECURITE_DONNEES.md`](docs/SECURITE_DONNEES.md) — flux de données, LLM, secrets, archivage
+
 ## Fonctions complémentaires
 - **Macro-US** (`Type=macro`, `Parent`) : ligne de synthèse dans la couverture ; anomalies si parent inconnu ou macro sans enfant.
 - **SSS / SSDD** : `ingest-refs examples/refs.csv` ; liens OSLC et option `require_sss`/`require_ssdd` dans `config/test-model.json`.

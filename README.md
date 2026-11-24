@@ -12,6 +12,10 @@ Les agents raisonnent ; la partie déterministe (validation, versionnage, couver
 | `adaptateur-elm` | Test Script / Case / Suite + liens OSLC (dry-run par défaut) | 3 |
 | `orchestrateur` (primaire) | Pilote, arrêt de validation humaine, journal | 3 |
 
+Configuration opencode v2 : `opencode.jsonc` (règles `permissions` ordonnées, la dernière correspondance gagne ; tout est refusé par défaut puis rouvert par agent),
+agents Markdown (`mode`, `steps`, `permissions`), commandes `.opencode/commands/` et **skills** `.opencode/skills/<id>/SKILL.md` :
+`ivq-story-format`, `ivq-test-matrix`, `ivq-human-review`, `ivq-elm-oslc` (chargés à la demande par les agents).
+
 ## Utilisation
 ```bash
 opencode                      # agent par défaut : orchestrateur
@@ -35,7 +39,7 @@ Les listes dans une cellule CSV/Excel sont séparées par ` | ` ; critères : `A
 - **Traçabilité OSLC** : `validatesRequirement` + US/version/fonction/version logicielle/générateur/relecteur.
 - **Modèle imposé** : `config/test-model.json` (priorités, types, catégories, nommage) vérifié à chaque `merge`/`validate`.
 - **Recette uniquement** : `allowed_project_areas`, refus d'URL « prod », `ELM_ENV=recette`, `--confirm`, compte technique via `ELM_USER`/`ELM_PASSWORD` (permissions minimales côté ELM).
-- **Audit** : `workspace/journal.jsonl` (source, décision, version, date, statut), chaîné par hash (`audit-verify`). Les permissions opencode limitent aussi chaque agent à ses commandes/fichiers.
+- **Audit** : `workspace/journal.jsonl` (source, décision, version, date, statut), chaîné par hash (`audit-verify`). Les permissions opencode limitent aussi chaque agent à ses commandes/fichiers ; `review-set`/`review-apply` ne sont autorisés à aucun agent.
 
 ## À adapter / valider sur votre ELM
 Les URL des fabriques de création QM (`config/elm.json`), les prédicats OSLC et les propriétés `ivq:*` (à mapper vers vos attributs personnalisés) sont des hypothèses standard OSLC QM 2.0 : à tester sur le projet de recette. Non couvert en v1 : Execution Records, liens défauts, extraction native DOORS/Word (faite par l'agent), authentification form-based JAS/OAuth.

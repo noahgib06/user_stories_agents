@@ -4,7 +4,10 @@ from difflib import SequenceMatcher
 
 
 def _ambiguous(text):
-    return any(re.search(r"(?<!\w)" + re.escape(w) + r"(?!\w)", text.lower()) for w in AMBIGUOUS)
+    def hit(w):
+        pat = re.escape(w)
+        return re.search(pat if not w[0].isalnum() else r"(?<!\w)" + pat + r"(?!\w)", text.lower())
+    return any(hit(w) for w in AMBIGUOUS)
 
 
 AMBIGUOUS = ["etc", "...", "approprié", "correct", "rapide", "rapidement", "convenable", "si besoin",

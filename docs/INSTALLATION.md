@@ -16,7 +16,7 @@ python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
 
 ## Vérification
 ```bash
-python3 -m unittest discover -s tests -t .     # 14 tests (1 ignoré sans openpyxl)
+python3 -m unittest discover -s tests -t .     # 17 tests (1 ignoré sans openpyxl)
 opencode2 debug config                         # la configuration doit se charger sans erreur
 opencode2 debug agents                         # 6 agents IVQ : ingestion, analyse, generation, couverture, adaptateur-elm, orchestrateur
 ```

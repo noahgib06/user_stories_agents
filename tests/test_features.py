@@ -218,6 +218,7 @@ class Features(Base):
         self.assertEqual(ingest.extract_text(d / "b.reqif"), "[R1] Exigence un")
         self.assertTrue(coverage._ambiguous("afficher si besoin."))
         self.assertFalse(coverage._ambiguous("fetch des données"))
+        self.assertTrue(coverage._ambiguous("message..."))
 
     def test_review_csv_content_correction_bumps_version(self):
         out = Path(self.d) / "review.csv"
@@ -230,6 +231,12 @@ class Features(Base):
         t = next(x for x in load_json(Path(self.d) / "tests.json") if x["id"] == first["id"])
         self.assertEqual((t["version"], t["status"]), (2, "Brouillon"))
         self.assertTrue(t["title"].endswith("(corrigé)"))
+        self.assertNotIn("review", t)
+        txt = out.read_text(encoding="utf-8").replace("(corrigé)", "").replace("1. ", "1. sans fleche ", 1)
+        txt = txt.replace(" => ", " ", 1)
+        out.write_text(txt, encoding="utf-8")
+        with self.assertRaises(SystemExit):
+            store.apply_review_csv(self.d, out, self.m, {"Autre": "IVQ"})
 
     def test_group_by_sprint_dry_run_and_trace(self):
         self.validate_all()

@@ -140,7 +140,12 @@ def apply_review_csv(ws, path, model, reviewers=None):
                     if len(steps) == len(t["steps"]) else [{"action": a, "data": "", "expected": e} for a, e in steps]
             if fix:
                 # correction de contenu : nouvelle version en Brouillon, à revalider par l'humain
-                merge(ws, [dict(t, **fix)], model, actor=r["reviewer"])
+                if reviewers is not None and r["reviewer"] not in reviewers:
+                    raise SystemExit(f"relecteur non habilité: {r['reviewer']} (voir config/reviewers.json)")
+                base = {k: v for k, v in t.items() if k not in ("review", "history", "elm", "defects")}
+                res = merge(ws, [dict(base, **fix)], model, actor=r["reviewer"])
+                if res["rejected"]:
+                    raise SystemExit(f"correction rejetée pour {r['id']}: {res['rejected'][r['id']]}")
                 n += 1
                 continue
             if r["status"] != t["status"] or r.get("comment"):

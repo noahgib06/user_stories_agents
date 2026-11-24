@@ -14,6 +14,7 @@ Placez vos fichiers dans `sources/` (contenu ignoré par git). Formats : CSV (s�
 Colonnes reconnues (voir `examples/stories.csv`) : ID exigence, Titre, Type (`us`/`macro`), Parent, Version, Priorité, Fonction de service, Acteur, Préconditions, Règles métier, Données d'entrée, Résultat attendu, Cas alternatifs, Erreurs, Critères d'acceptation, Sprint, Campagne, Module, SSS, SSDD, Version logicielle.
 - Listes dans une cellule : séparées par ` | `.
 - Critères : `AC1: texte | AC2: texte`.
+- Word (.docx) / DOORS (.reqif) : `python3 -m ivq extract <fichier>` en extrait le texte (l'agent le structure ensuite). `.reqifz` : décompressez d'abord ; les champs énumérés ReqIF (priorité, statut) ne sont pas encore décodés.
 - Macro-US : `Type=macro`, ses US filles pointent vers elle via `Parent`.
 - SSS/SSDD : référentiel `id;doc;title;url` chargé par `ingest-refs`.
 
@@ -28,6 +29,7 @@ python3 -m ivq review-export            # workspace/review.csv (tableau de revue
 python3 -m ivq review-set TC-US-101-NOM-01 Validé --by "Prénom Nom" --comment "..."
 python3 -m ivq review-apply workspace/review.csv   # décisions en lot
 ```
+Corrections de contenu : modifier `title` ou `steps` (une étape par ligne, `1. action => attendu`) dans `review.csv` (avec `reviewer`) crée une nouvelle version en `Brouillon` à revalider ; une correction invalide est refusée.
 Pour le lot : dans `review.csv`, renseigner `status` (`Validé`/`Rejeté`), `reviewer` (nom) et éventuellement `comment` ; les lignes sans `reviewer` sont ignorées.
 Statuts : `Brouillon` / `Validé` / `Rejeté`. Une validation vaut pour **une version** : si le test change, il passe en version +1, l'ancienne est conservée dans `history`, et il retombe en `Brouillon`.
 Option : `config/reviewers.json` (voir `reviewers.example.json`) limite les relecteurs aux rôles IVQ/PO. Sans ce fichier, tout nom est accepté.

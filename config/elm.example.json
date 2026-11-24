@@ -1,0 +1,14 @@
+{
+  "_doc": "Copier en config/elm.json (ignoré par git). Ne jamais y mettre de secret : ELM_USER / ELM_PASSWORD viennent de l environnement.",
+  "base_url": "https://elm-recette.example.org/qm",
+  "project_area": "PROJET-RECETTE",
+  "allowed_project_areas": ["PROJET-RECETTE"],
+  "forbidden_url_substrings": ["prod", "production"],
+  "test_plan_url": "",
+  "creation_factories": {
+    "testcase": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.planning.VersionedTestCase",
+    "testscript": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.planning.VersionedTestScript",
+    "testsuite": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.planning.VersionedTestSuite"
+  },
+  "requirement_base_url": "https://elm-recette.example.org/rm/resources/"
+}

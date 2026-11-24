@@ -1,0 +1,9 @@
+{"tests": [
+ {"id":"TC-US-101-NOM-01","title":"[FS-AUTH-LOGIN] nominal - connexion valide","description":"Vérifie AC1","priority":"P1","type":"nominal","category":"Fonctionnel","owner":"ivq","story_id":"US-101","story_version":"2","service_function":"FS-AUTH-LOGIN","software_version":"1.4.0","criteria_ids":["US-101-AC1"],"preconditions":["Compte actif existant"],
+  "steps":[{"action":"Saisir un login et un mot de passe valides puis valider","data":"login=jdupont; mdp=Valide#2024","expected":"Le tableau de bord s'affiche"}],
+  "data_rows":[{"login":"jdupont","password":"Valide#2024"}],
+  "generator":{"agent":"generation","model":"opencode/example"}},
+ {"id":"TC-US-101-ERR-01","title":"[FS-AUTH-LOGIN] erreur - mot de passe erroné","description":"Vérifie AC2","priority":"P1","type":"erreur","category":"Fonctionnel","owner":"ivq","story_id":"US-101","story_version":"2","service_function":"FS-AUTH-LOGIN","criteria_ids":["US-101-AC2"],"preconditions":["Compte actif existant"],
+  "steps":[{"action":"Saisir un mot de passe erroné puis valider","data":"mdp=faux","expected":"Un message d'erreur explicite est affiché"}],
+  "generator":{"agent":"generation","model":"opencode/example"}}
+]}

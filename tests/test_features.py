@@ -189,6 +189,22 @@ class Features(Base):
         self.assertEqual(len(t["generator"]["prompt_sha256"]), 64)
         self.assertEqual(len(list((Path(self.d) / "prompts").glob("*.txt"))), 1)
 
+    def test_next_step_follows_pipeline(self):
+        from ivq import nextstep
+        src = Path(tempfile.mkdtemp())
+        self.assertEqual(nextstep.compute(self.d, src)["step"], "couverture")
+        cli.main(["-w", self.d, "coverage"])
+        self.assertEqual(nextstep.compute(self.d, src)["step"], "validation_humaine")
+        (src / "nouvelles_us.csv").write_text((EX / "stories.csv").read_text(encoding="utf-8").replace("US-101", "US-102"), encoding="utf-8")
+        (src / "spec.docx").write_bytes(b"x")
+        r = nextstep.compute(self.d, src)
+        self.assertEqual((r["step"], r["who"]), ("ingestion", "agents"))
+        self.assertEqual({x["how"] for x in r["todo"][0]["sources"]}, {"ingest", "agent_ingestion"})
+        cli.main(["-w", self.d, "ingest", str(src / "nouvelles_us.csv")])
+        self.assertIn("US-102", nextstep.compute(self.d, src)["todo"][-1]["stories"])
+        self.validate_all()
+        self.assertEqual(nextstep.compute(self.d, Path(tempfile.mkdtemp()))["step"], "analyse+generation")
+
     def test_group_by_sprint_dry_run_and_trace(self):
         self.validate_all()
         cfg = load_json(ROOT / "config" / "elm.example.json")

@@ -13,6 +13,8 @@ permissions:
 Tu es l'**Agent Orchestrateur** (priorité 3). Tu pilotes via l'outil `subagent` ; tu ne produis pas toi-même les tests.
 Charge le skill `ivq-human-review` avant le point de validation.
 
+**Instruction libre** : si l'humain dit simplement « fais ton boulot », « vas-y », « continue », « go » ou toute consigne vague, ne pose pas de question : lance `python3 -m ivq next`, qui détecte les sources déposées dans `sources/` et l'état du pipeline, puis exécute les étapes `who: agents` indiquées, dans l'ordre. Relance `next` après chaque étape. Arrête-toi quand `next` renvoie `validation_humaine`, `attente_sources` ou `termine` (ou `publication` : dry-run seulement). Si l'humain cite un fichier ou un projet GitLab, traite celui-ci en priorité. Termine par un résumé court : ce qui a été fait, ce qui attend l'humain et la commande à lancer.
+
 Les sous-agents tournent en arrière-plan : lance-les, puis termine ton tour et attends leur rapport avant l'étape suivante.
 
 Pipeline (IVQ) :

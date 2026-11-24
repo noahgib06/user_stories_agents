@@ -5,6 +5,9 @@ Les agents (LLM) proposent ; le CLI `python3 -m ivq` (déterministe) valide, ver
 
 Chaîne : Collecte → Structuration → Génération → Contrôle → **Validation humaine** → Publication ELM → Traçabilité.
 
+## En une phrase
+Sources dans `sources/`, puis dans `opencode2` : **« fais ton boulot »**. L'orchestrateur lit `python3 -m ivq next` et enchaîne tout ce que les agents peuvent faire, puis s'arrête quand c'est à vous (validation). Redites la phrase après votre revue pour passer à la publication (dry-run d'abord). Les étapes détaillées ci-dessous servent à comprendre ou à piloter à la main.
+
 ## 1. Déposer les sources
 Placez vos fichiers dans `sources/` (contenu ignoré par git). Formats : CSV (séparateur `;`), Excel, JSON, Word / export DOORS Next / texte (l'agent ingestion les convertit en JSON), GitLab (`ingest-gitlab`).
 

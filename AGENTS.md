@@ -6,6 +6,9 @@ Chaîne de traçabilité : **User Story → fonction de service → cas de test 
 `stories.json` (fiches structurées) · `model.json` (modèle de test fonctionnel) · `tests.proposed.json` (propositions)
 · `tests.json` (référentiel versionné) · `coverage.json|md` · `review.csv` · `datasets/` · `elm_out/` · `journal.jsonl` (audit, chaîné par hash).
 
+## Mode « fais ton boulot »
+Une phrase suffit : l'orchestrateur appelle `python3 -m ivq next` (détecte `sources/`, tests manquants, revue en attente, publication) et enchaîne les étapes agents jusqu'au prochain point humain.
+
 ## Règles absolues
 1. **Validation humaine obligatoire** avant toute publication ELM : seul un humain (IVQ/PO) passe un test à `Validé`/`Rejeté`
    (`python3 -m ivq review-set|review-apply`). Les agents n'exécutent jamais ces commandes.

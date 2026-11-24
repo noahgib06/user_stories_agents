@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-from . import audit, coverage, elm, ingest, store
+from . import audit, coverage, elm, ingest, nextstep, store
 from .model import ROOT, load_json, load_model, save_json, validate_story, validate_test
 
 REVIEWERS = ROOT / "config" / "reviewers.json"
@@ -58,6 +58,7 @@ def build_parser():
     p.add_argument("--no-suites", action="store_true")
     p.add_argument("--with-executions", action="store_true", help="crée aussi un Execution Record par test")
     sub.add_parser("status")
+    sub.add_parser("next", help="état du pipeline et prochaine action")
     sub.add_parser("audit-verify")
     return ap
 
@@ -146,6 +147,10 @@ def main(argv=None):
         print(json.dumps({"live": rep["live"], "published": len(rep["published"]), "plans": len(rep["plans"]),
                           "suites": len(rep["suites"]), "executions": len(rep["executions"]),
                           "skipped": rep["skipped"]}, ensure_ascii=False, indent=2))
+        return 0
+
+    if a.cmd == "next":
+        print(json.dumps(nextstep.compute(ws), ensure_ascii=False, indent=2))
         return 0
 
     if a.cmd == "status":

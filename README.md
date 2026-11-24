@@ -16,6 +16,9 @@ Configuration opencode v2 : `opencode.jsonc` (règles `permissions` ordonnées, 
 agents Markdown (`mode`, `steps`, `permissions`), commandes `.opencode/commands/` et **skills** `.opencode/skills/<id>/SKILL.md` :
 `ivq-story-format`, `ivq-test-matrix`, `ivq-human-review`, `ivq-elm-oslc` (chargés à la demande par les agents).
 
+## En une phrase
+Déposez vos fichiers dans `sources/`, lancez `opencode2`, puis écrivez **« fais ton boulot »** : l'orchestrateur détecte l'état avec `python3 -m ivq next` (nouvelles sources, US sans test, revue en attente…) et enchaîne ingestion → analyse → génération → contrôle, puis s'arrête pour votre validation. Relancez la même phrase après avoir validé : il passe à la publication (dry-run ; le réel exige un ordre explicite). `python3 -m ivq next` seul affiche l'état et la prochaine action.
+
 ## Documents d'entrée
 Déposez vos sources (CSV, Excel, Word, exports DOORS Next, JSON) dans `sources/` (contenu ignoré par git, rien n'est poussé), puis `/ivq-run sources/<fichier>`.
 

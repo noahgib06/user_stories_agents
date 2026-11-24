@@ -11,6 +11,7 @@
     { "action": "websearch", "resource": "*", "effect": "deny" },
     { "action": "external_directory", "resource": "*", "effect": "ask" },
     { "action": "shell", "resource": "python3 -m ivq status *", "effect": "allow" },
+    { "action": "shell", "resource": "python3 -m ivq next *", "effect": "allow" },
     { "action": "shell", "resource": "python3 -m ivq validate *", "effect": "allow" },
     { "action": "shell", "resource": "python3 -m ivq audit-verify *", "effect": "allow" },
   ],

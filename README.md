@@ -24,7 +24,7 @@ Déposez vos sources (CSV, Excel, Word, exports DOORS Next, JSON) dans `sources/
 
 ## Utilisation
 ```bash
-opencode                      # agent par défaut : orchestrateur
+opencode2                     # (V2 ; `opencode` V1 refuse la config) agent par défaut : orchestrateur
 /ivq-run examples/stories.csv # ingestion → analyse → génération → contrôle, puis arrêt
 /ivq-review                   # tableau de revue (workspace/review.csv) + couverture
 python3 -m ivq review-set TC-US-101-NOM-01 Validé --by "Prénom Nom"   # décision HUMAINE
@@ -64,4 +64,4 @@ Les listes dans une cellule CSV/Excel sont séparées par ` | ` ; critères : `A
 - **Datasets** : `datasets [--xlsx]` (xlsx nécessite `pip install -r requirements.txt`).
 
 ## À valider chez vous
-Testé : 14 tests unitaires/intégration (faux serveur ELM), config/agents chargés par `opencode2`. **Non testé** : un vrai ELM (URL des fabriques, prédicats OSLC, propriétés `ivq:*`, JAS/OAuth réel) et l'exécution LLM dans opencode. `--by` n'est pas une authentification cryptographique. Le modèle (`model:`) suit votre config opencode.
+Testé : 17 tests unitaires/intégration (faux serveur ELM), config/agents chargés par `opencode2`. **Non testé** : un vrai ELM (URL des fabriques, prédicats OSLC, propriétés `ivq:*`, JAS/OAuth réel) et l'exécution LLM dans opencode. `--by` n'est pas une authentification cryptographique. Le modèle (`model:`) suit votre config opencode.

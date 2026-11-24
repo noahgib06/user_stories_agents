@@ -6,6 +6,7 @@ from pathlib import Path
 from .model import ROOT, load_json
 
 DIRECT = {".csv", ".xlsx", ".json"}
+EXTRACT = {".docx", ".reqif"}
 IGNORED = {".gitkeep", "readme.md"}
 
 
@@ -30,7 +31,7 @@ def _sources(ws, sources_dir):
         if hashlib.sha256(f.read_bytes()).hexdigest() in done:
             continue
         new.append({"file": str(f.relative_to(ROOT)) if f.is_relative_to(ROOT) else str(f),
-                    "how": "ingest" if f.suffix.lower() in DIRECT else "agent_ingestion"})
+                    "how": "ingest" if f.suffix.lower() in DIRECT else "extract_then_agent" if f.suffix.lower() in EXTRACT else "agent_ingestion"})
     return new
 
 

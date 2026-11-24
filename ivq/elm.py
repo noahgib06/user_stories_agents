@@ -161,7 +161,7 @@ class Client:
         return url
 
 
-def _req_links(story, refs, cfg):
+def _req_links(story, refs, cfg, parent=None):
     preds = {**DEFAULT_PREDICATES, **cfg.get("link_predicates", {})}
     base = cfg.get("requirement_base_url", "")
 
@@ -172,7 +172,7 @@ def _req_links(story, refs, cfg):
     links += [(preds["sss"], url(r)) for r in story.get("sss_refs") or []]
     links += [(preds["ssdd"], url(r)) for r in story.get("ssdd_refs") or []]
     if story.get("parent"):
-        links.append((preds["macro"], base + story["parent"]))
+        links.append((preds["macro"], (parent or {}).get("requirement_url") or base + story["parent"]))
     return list(dict.fromkeys(links))
 
 
@@ -223,7 +223,7 @@ def publish(ws, cfg, live=False, with_suites=True, with_plan=True, with_executio
             report["skipped"].append({"id": t["id"], "reason": "déjà publié (même version)"})
         else:
             story = stories[t["story_id"]]
-            links = _req_links(story, refs, cfg)
+            links = _req_links(story, refs, cfg, stories.get(story.get("parent")))
             script_url, a1 = send("testscript", elm.get("testscript"), script_payload(t), f"{t['id']}.script.rdf")
             case_url, action = send("testcase", elm.get("testcase"), case_payload(t, links, script_url), f"{t['id']}.case.rdf")
             if live:

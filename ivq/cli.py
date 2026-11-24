@@ -21,11 +21,14 @@ def build_parser():
     ap.add_argument("-w", "--workspace", default=str(ROOT / "workspace"))
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("ingest", help="CSV/XLSX/JSON -> workspace/stories.json")
+    p.add_argument("--origin", help="fichier source d'origine (ex. .docx) dont le hash est journalisé")
     p.add_argument("source")
     p = sub.add_parser("ingest-gitlab")
     p.add_argument("project")
     p.add_argument("--labels")
     p = sub.add_parser("ingest-refs", help="référentiel SSS/SSDD (CSV id;doc;title;url ou JSON)")
+    p.add_argument("source")
+    p = sub.add_parser("extract", help="texte brut d'un .docx/.reqif -> workspace/extracted/<nom>.txt")
     p.add_argument("source")
     sub.add_parser("validate", help="valide stories.json et tests.json")
     p = sub.add_parser("merge", help="intègre des propositions de tests (statut forcé Brouillon)")
@@ -77,8 +80,8 @@ def main(argv=None):
             if s["id"] not in bad:
                 cur[s["id"]] = s
         save_json(ws / "stories.json", list(cur.values()))
-        src = a.source if a.cmd == "ingest" else a.project
-        audit.log(ws, "ingest", "ingestion", source=src, sha256=_sha(a.source) if a.cmd == "ingest" else None,
+        src = (a.origin or a.source) if a.cmd == "ingest" else a.project
+        audit.log(ws, "ingest", "ingestion", source=src, sha256=_sha(a.origin or a.source) if a.cmd == "ingest" else None,
                   ok=len(new) - len(bad), incomplete=list(bad))
         print(json.dumps({"ingested": len(new) - len(bad), "incomplete": bad}, ensure_ascii=False, indent=2))
         return 1 if bad else 0
@@ -147,6 +150,14 @@ def main(argv=None):
         print(json.dumps({"live": rep["live"], "published": len(rep["published"]), "plans": len(rep["plans"]),
                           "suites": len(rep["suites"]), "executions": len(rep["executions"]),
                           "skipped": rep["skipped"]}, ensure_ascii=False, indent=2))
+        return 0
+
+    if a.cmd == "extract":
+        out = ws / "extracted" / (Path(a.source).stem + ".txt")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(ingest.extract_text(a.source), encoding="utf-8")
+        audit.log(ws, "extract", "ingestion", source=a.source, sha256=_sha(a.source), output=str(out))
+        print(out)
         return 0
 
     if a.cmd == "next":

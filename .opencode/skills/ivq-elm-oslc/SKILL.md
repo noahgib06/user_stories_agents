@@ -6,7 +6,10 @@ description: Publication des Test Script, Test Case et Test Suite dans ELM (OSLC
 ## Artefacts
 - **Test Script** : étapes numérotées, données, résultats attendus, préconditions.
 - **Test Case** : titre, description, priorité, type, catégorie, owner, `oslc_qm:validatesRequirement` → US, `oslc_qm:usesTestScript`.
-- **Test Suite** : regroupement par fonction de service (`oslc_qm:usesTestCase`).
+- **Test Suite** : regroupement par fonction, sprint, campagne ou module (`--group-by`, `oslc_qm:usesTestCase`).
+- **Test Plan** : par campagne ou version logicielle (`plan_by`) ; `--no-plan` pour l'omettre.
+- **Execution Records** : `--with-executions`. **Défauts** : `link-defect` (humain) → `relatedChangeRequest`.
+- **Liens** : US, SSS, SSDD, macro-US parente.
 - Traçabilité portée par chaque artefact : US+version, fonction, version logicielle, générateur, relecteur, version du test.
 
 ## Garde-fous (appliqués par `ivq/elm.py`)

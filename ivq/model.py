@@ -42,7 +42,7 @@ def validate_story(s):
 def validate_test(t, model, story_ids=None):
     errs = []
     for k in ["id", "title", "priority", "type", "category", "story_id", "story_version",
-              "criteria_ids", "steps", "status", "version", "generator"]:
+              "criteria_ids", "steps", "status", "version", "generator", "service_function"]:
         if t.get(k) in (None, "", []):
             errs.append(f"champ manquant: {k}")
     if errs:

@@ -2,6 +2,7 @@
 import csv
 import hashlib
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -110,6 +111,17 @@ def export_review_csv(ws, path):
                         t["status"], "", ""])
 
 
+def _parse_steps(text, default):
+    """Relit « 1. action => attendu » (une étape par ligne) ; renvoie [(action, attendu)]."""
+    out = []
+    for line in (text or "").splitlines():
+        line = re.sub(r"^\s*\d+\.\s*", "", line).strip()
+        if line:
+            a, _, e = line.partition("=>")
+            out.append((a.strip(), e.strip()))
+    return out or [(s["action"], s["expected"]) for s in default]
+
+
 def apply_review_csv(ws, path, model, reviewers=None):
     """Applique les décisions saisies (colonnes status/reviewer/comment) ; ignore les lignes inchangées."""
     tests = {t["id"]: t for t in load_json(Path(ws) / "tests.json")}
@@ -118,6 +130,18 @@ def apply_review_csv(ws, path, model, reviewers=None):
         for r in csv.DictReader(f, delimiter=";"):
             t = tests.get(r["id"])
             if not t or not r.get("reviewer"):
+                continue
+            fix = {}
+            if r.get("title", "").strip() and r["title"].strip() != t["title"]:
+                fix["title"] = r["title"].strip()
+            steps = _parse_steps(r.get("steps", ""), t["steps"])
+            if steps != [(s["action"], s["expected"]) for s in t["steps"]]:
+                fix["steps"] = [dict(s, action=a, expected=e) for s, (a, e) in zip(t["steps"], steps)] \
+                    if len(steps) == len(t["steps"]) else [{"action": a, "data": "", "expected": e} for a, e in steps]
+            if fix:
+                # correction de contenu : nouvelle version en Brouillon, à revalider par l'humain
+                merge(ws, [dict(t, **fix)], model, actor=r["reviewer"])
+                n += 1
                 continue
             if r["status"] != t["status"] or r.get("comment"):
                 review(ws, r["id"], r["status"], r["reviewer"], r.get("comment", ""), model, reviewers)

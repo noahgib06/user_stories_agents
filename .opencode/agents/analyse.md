@@ -3,6 +3,7 @@ description: Agent Analyse Fonctionnelle — acteurs, préconditions, données, 
 mode: subagent
 steps: 20
 permissions:
+  - { action: edit, resource: "workspace/questions_analyse.md", effect: allow }
   - { action: edit, resource: "workspace/model.json", effect: allow }
   - { action: shell, resource: "python3 -m ivq validate *", effect: allow }
 ---
@@ -20,3 +21,5 @@ Pour chaque US, établis :
 
 Format : `{"stories":[{"story_id","actors","flows","equivalence_classes","rules","interfaces","nfr","recommended_matrix":[{"type","criteria_ids","rationale"}],"open_questions"}]}`.
 Ne spécule pas : toute valeur absente de la source va dans `open_questions`.
+
+Questions : si une information manque ou est ambiguë (règle, valeur, critère), n'invente rien : écris-la dans `workspace/questions_analyse.md` (une ligne par question : US/critère concerné + question pour le PO) et mentionne-la dans ton rapport.

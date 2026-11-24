@@ -2,6 +2,11 @@
 import re
 from difflib import SequenceMatcher
 
+
+def _ambiguous(text):
+    return any(re.search(r"(?<!\w)" + re.escape(w) + r"(?!\w)", text.lower()) for w in AMBIGUOUS)
+
+
 AMBIGUOUS = ["etc", "...", "approprié", "correct", "rapide", "rapidement", "convenable", "si besoin",
              "éventuellement", "le cas échéant", "normalement", "quelques", "fast", "properly"]
 
@@ -50,7 +55,7 @@ def analyse(stories, tests, model, refs=None):
             if not ts:
                 anomalies.append({"severity": "majeure", "kind": "trou", "story": s["id"],
                                   "detail": f"critère non couvert: {c['id']}"})
-            if any(w in c["text"].lower() for w in AMBIGUOUS):
+            if _ambiguous(c["text"]):
                 anomalies.append({"severity": "mineure", "kind": "ambigu", "story": s["id"],
                                   "detail": f"critère ambigu {c['id']}: à clarifier avec le PO"})
     for s in stories:
@@ -79,7 +84,7 @@ def analyse(stories, tests, model, refs=None):
             anomalies.append({"severity": "majeure", "kind": "obsolète", "test": t["id"],
                               "detail": f"généré pour v{t['story_version']}, US en v{sv[t['story_id']]}"})
         for st in t["steps"]:
-            if any(w in (st["expected"] or "").lower().split() for w in AMBIGUOUS) or len(st["expected"].split()) < 2:
+            if _ambiguous(st["expected"] or "") or len(st["expected"].split()) < 2:
                 anomalies.append({"severity": "mineure", "kind": "ambigu", "test": t["id"],
                                   "detail": "résultat attendu vague ou trop court"})
                 break

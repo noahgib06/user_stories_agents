@@ -121,6 +121,43 @@ def from_gitlab(project, labels=None):
     return out
 
 
+def extract_text(path):
+    """Texte brut d'un .docx (paragraphes + tableaux, cellules séparées par « | ») ou d'un .reqif (une ligne par exigence)."""
+    import xml.etree.ElementTree as ET
+    import zipfile
+    ext = Path(path).suffix.lower()
+    if ext == ".docx":
+        W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+        with zipfile.ZipFile(path) as z:
+            root = ET.fromstring(z.read("word/document.xml"))
+        para = lambda p: "".join(t.text or "" for t in p.iter(W + "t"))
+        lines = []
+        for el in root.find(W + "body"):
+            if el.tag == W + "p":
+                if (txt := para(el)).strip():
+                    lines.append(txt)
+            elif el.tag == W + "tbl":
+                for tr in el.iter(W + "tr"):
+                    lines.append(" | ".join(" ".join(para(p) for p in tc.iter(W + "p")).strip() for tc in tr.iter(W + "tc")))
+        return "\n".join(lines)
+    if ext == ".reqif":
+        root = ET.parse(path).getroot()
+        local = lambda e: e.tag.rsplit("}", 1)[-1]
+        lines = []
+        for spec in root.iter():
+            if local(spec) != "SPEC-OBJECT":
+                continue
+            vals = []
+            for v in spec.iter():
+                if local(v).startswith("ATTRIBUTE-VALUE") and v.get("THE-VALUE") is not None:
+                    vals.append(v.get("THE-VALUE"))
+                elif local(v) == "THE-VALUE" and (txt := "".join(v.itertext()).strip()):
+                    vals.append(txt)
+            lines.append(f"[{spec.get('IDENTIFIER', '?')}] " + " | ".join(x for x in vals if x))
+        return "\n".join(lines)
+    raise ValueError(f"extraction non supportée : {ext}")
+
+
 def ingest(path):
     ext = Path(path).suffix.lower()
     return {".csv": from_csv, ".xlsx": from_xlsx, ".json": from_json}[ext](path)

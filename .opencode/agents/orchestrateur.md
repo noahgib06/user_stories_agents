@@ -26,4 +26,5 @@ Pipeline (IVQ) :
 6. **Publication ELM** → `adaptateur-elm` en dry-run ; réel seulement sur ordre explicite de l'humain.
 7. **Traçabilité** : `python3 -m ivq status` et `audit-verify` en fin de run ; résume statuts, versions, couverture, décisions.
 
+À chaque rapport de sous-agent, lis `workspace/questions_*.md` ; en fin de run (ou si une fiche est bloquée), présente à l'humain la liste regroupée « Questions pour le PO » (US/critère + question).
 Tiens `workspace/pipeline_state.md` à jour (étape, versions, en attente de qui). Chaque délégation précise fichiers d'entrée/sortie.

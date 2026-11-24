@@ -199,11 +199,37 @@ class Features(Base):
         (src / "spec.docx").write_bytes(b"x")
         r = nextstep.compute(self.d, src)
         self.assertEqual((r["step"], r["who"]), ("ingestion", "agents"))
-        self.assertEqual({x["how"] for x in r["todo"][0]["sources"]}, {"ingest", "agent_ingestion"})
+        self.assertEqual({x["how"] for x in r["todo"][0]["sources"]}, {"ingest", "extract_then_agent"})
         cli.main(["-w", self.d, "ingest", str(src / "nouvelles_us.csv")])
         self.assertIn("US-102", nextstep.compute(self.d, src)["todo"][-1]["stories"])
         self.validate_all()
         self.assertEqual(nextstep.compute(self.d, Path(tempfile.mkdtemp()))["step"], "analyse+generation")
+
+    def test_extract_docx_reqif_and_ambiguity(self):
+        import zipfile
+        d = Path(tempfile.mkdtemp())
+        W = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
+        with zipfile.ZipFile(d / "a.docx", "w") as z:
+            z.writestr("word/document.xml", f"<w:document {W}><w:body><w:p><w:r><w:t>US-9 Connexion</w:t></w:r></w:p>"
+                       "<w:tbl><w:tr><w:tc><w:p><w:r><w:t>AC1</w:t></w:r></w:p></w:tc><w:tc><w:p><w:r><w:t>OK</w:t></w:r></w:p></w:tc></w:tr></w:tbl></w:body></w:document>")
+        self.assertEqual(ingest.extract_text(d / "a.docx"), "US-9 Connexion\nAC1 | OK")
+        (d / "b.reqif").write_text('<REQ-IF xmlns="http://www.omg.org/spec/ReqIF/20110401/reqif.xsd"><SPEC-OBJECT IDENTIFIER="R1">'
+                                   '<VALUES><ATTRIBUTE-VALUE-STRING THE-VALUE="Exigence un"/></VALUES></SPEC-OBJECT></REQ-IF>', encoding="utf-8")
+        self.assertEqual(ingest.extract_text(d / "b.reqif"), "[R1] Exigence un")
+        self.assertTrue(coverage._ambiguous("afficher si besoin."))
+        self.assertFalse(coverage._ambiguous("fetch des données"))
+
+    def test_review_csv_content_correction_bumps_version(self):
+        out = Path(self.d) / "review.csv"
+        store.export_review_csv(self.d, out)
+        txt = out.read_text(encoding="utf-8-sig").replace(";Brouillon;;", ";Brouillon;Relecteur;", 1)
+        first = load_json(Path(self.d) / "tests.json")[0]
+        txt = txt.replace(first["title"], first["title"] + " (corrigé)", 1)
+        out.write_text(txt, encoding="utf-8")
+        store.apply_review_csv(self.d, out, self.m)
+        t = next(x for x in load_json(Path(self.d) / "tests.json") if x["id"] == first["id"])
+        self.assertEqual((t["version"], t["status"]), (2, "Brouillon"))
+        self.assertTrue(t["title"].endswith("(corrigé)"))
 
     def test_group_by_sprint_dry_run_and_trace(self):
         self.validate_all()

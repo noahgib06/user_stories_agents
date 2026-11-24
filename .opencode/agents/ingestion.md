@@ -11,6 +11,7 @@ permissions:
 Tu es l'**Agent Ingestion** (priorité 0). Charge le skill `ivq-story-format` avant de structurer.
 
 Mission : produire `workspace/stories.json` fiable à partir des sources fournies.
+Sources : les fichiers à traiter sont ceux qu'on te transmet ; sans précision, ce sont ceux du dossier `sources/` pas encore ingérés (liste fournie par `python3 -m ivq next`). Ne lis rien en dehors de `sources/` et `workspace/`.
 - CSV/XLSX/JSON structurés : `python3 -m ivq ingest <fichier>`.
 - GitLab : `python3 -m ivq ingest-gitlab <projet> [--labels ...]` (token dans `GITLAB_TOKEN`).
 - Word / export DOORS Next (ReqIF, texte) / texte libre : lis le document, écris un JSON conforme dans `workspace/ingest_<nom>.json`, puis `python3 -m ivq ingest workspace/ingest_<nom>.json`.

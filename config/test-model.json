@@ -1,20 +1,51 @@
 {
   "_doc": "Modèle de test imposé : formats, priorités, catégories, nommage. Modifier ici, pas dans les agents.",
-  "statuses": ["Brouillon", "Validé", "Rejeté"],
-  "priorities": ["P1", "P2", "P3", "P4"],
-  "types": ["nominal", "alternatif", "erreur", "limite", "securite", "performance", "regression"],
-  "categories": ["Fonctionnel", "Interface", "Sécurité", "Performance", "Non-régression"],
+  "statuses": [
+    "Brouillon",
+    "Validé",
+    "Rejeté"
+  ],
+  "priorities": [
+    "P1",
+    "P2",
+    "P3",
+    "P4"
+  ],
+  "types": [
+    "nominal",
+    "alternatif",
+    "erreur",
+    "limite",
+    "securite",
+    "performance",
+    "regression"
+  ],
+  "categories": [
+    "Fonctionnel",
+    "Interface",
+    "Sécurité",
+    "Performance",
+    "Non-régression"
+  ],
   "naming": {
     "test_id_pattern": "^TC-[A-Z0-9]+(-[A-Z0-9]+)*-[A-Z]{3}-\\d{2}$",
     "test_id_example": "TC-US-101-NOM-01",
     "type_codes": {
-      "nominal": "NOM", "alternatif": "ALT", "erreur": "ERR", "limite": "LIM",
-      "securite": "SEC", "performance": "PER", "regression": "REG"
+      "nominal": "NOM",
+      "alternatif": "ALT",
+      "erreur": "ERR",
+      "limite": "LIM",
+      "securite": "SEC",
+      "performance": "PER",
+      "regression": "REG"
     },
     "title_pattern": "[<fonction de service>] <type> - <objectif>"
   },
   "matrix": {
-    "mandatory_types": ["nominal", "erreur"],
+    "mandatory_types": [
+      "nominal",
+      "erreur"
+    ],
     "conditional": {
       "limite": "dès qu'une donnée d'entrée a une borne ou un format",
       "securite": "dès qu'un acteur/rôle ou une permission est impliqué",
@@ -22,5 +53,9 @@
       "performance": "uniquement si une exigence non fonctionnelle chiffrée existe",
       "regression": "si la US modifie une fonction de service existante"
     }
+  },
+  "traceability": {
+    "require_sss": false,
+    "require_ssdd": false
   }
 }

@@ -6,7 +6,8 @@ import re
 import urllib.request
 from pathlib import Path
 
-LIST_FIELDS = ["preconditions", "business_rules", "inputs", "alternatives", "errors"]
+LIST_FIELDS = ["preconditions", "business_rules", "inputs", "alternatives", "errors", "sss_refs", "ssdd_refs"]
+SCALAR_FIELDS = ["sprint", "campaign", "module", "parent", "requirement_url", "software_version"]
 ALIASES = {  # en-têtes FR/EN (exports DOORS Next / Excel) -> champs normalisés
     "id": "id", "identifiant": "id", "id exigence": "id", "titre": "title", "title": "title",
     "version": "version", "priorité": "priority", "priorite": "priority", "priority": "priority",
@@ -19,6 +20,11 @@ ALIASES = {  # en-têtes FR/EN (exports DOORS Next / Excel) -> champs normalisé
     "erreurs": "errors", "errors": "errors",
     "critères d'acceptation": "acceptance_criteria", "criteres d'acceptation": "acceptance_criteria",
     "acceptance_criteria": "acceptance_criteria",
+    "type": "kind", "kind": "kind", "parent": "parent", "macro us": "parent", "macro-us": "parent",
+    "sprint": "sprint", "campagne": "campaign", "campaign": "campaign", "module": "module",
+    "sss": "sss_refs", "sss mk1": "sss_refs", "ssdd": "ssdd_refs", "sss_refs": "sss_refs", "ssdd_refs": "ssdd_refs",
+    "url exigence": "requirement_url", "requirement_url": "requirement_url",
+    "version logicielle": "software_version", "software_version": "software_version",
 }
 
 
@@ -43,6 +49,8 @@ def _normalise(row, source_type, ref):
     for k, v in row.items():
         key = ALIASES.get((k or "").strip().lower())
         if key:
+            if isinstance(v, float) and v.is_integer():
+                v = int(v)
             r[key] = (v or "").strip() if isinstance(v, str) or v is None else str(v)
     s = {"id": r.get("id", ""), "title": r.get("title", ""), "version": r.get("version") or "1",
          "priority": r.get("priority", ""), "service_function": r.get("service_function", ""),
@@ -50,6 +58,11 @@ def _normalise(row, source_type, ref):
          "source": {"type": source_type, "ref": ref}}
     for f in LIST_FIELDS:
         s[f] = _split(r.get(f))
+    for f in SCALAR_FIELDS:
+        if r.get(f):
+            s[f] = r[f]
+    if r.get("kind", "").lower() in ("macro", "macro-us", "macro us"):
+        s["kind"] = "macro"
     s["acceptance_criteria"] = _criteria(s["id"], _split(r.get("acceptance_criteria")))
     return s
 
@@ -86,18 +99,25 @@ def from_gitlab(project, labels=None):
     token = os.environ.get("GITLAB_TOKEN")
     if not token:
         raise SystemExit("GITLAB_TOKEN non défini")
-    q = f"?per_page=100&state=opened" + (f"&labels={labels}" if labels else "")
-    req = urllib.request.Request(f"{base}/api/v4/projects/{urllib.request.quote(project, safe='')}/issues{q}",
-                                 headers={"PRIVATE-TOKEN": token})
-    out = []
-    for it in json.load(urllib.request.urlopen(req, timeout=30)):
-        sid = f"GL-{it['iid']}"
-        ac = [m.group(1).strip() for m in re.finditer(r"^\s*[-*] \[[ xX]\]\s*(.+)$", it.get("description") or "", re.M)]
-        out.append({"id": sid, "title": it["title"], "version": it["updated_at"][:10], "priority": "",
-                    "service_function": "", "actor": "", "preconditions": [], "business_rules": [],
-                    "inputs": [], "expected_result": "", "alternatives": [], "errors": [],
-                    "acceptance_criteria": _criteria(sid, ac),
-                    "source": {"type": "gitlab", "ref": it["web_url"]}, "needs_enrichment": True})
+    proj = urllib.request.quote(project, safe="")
+    out, page = [], "1"
+    while page:
+        q = f"?per_page=100&state=opened&page={page}" + (f"&labels={urllib.request.quote(labels)}" if labels else "")
+        req = urllib.request.Request(f"{base}/api/v4/projects/{proj}/issues{q}", headers={"PRIVATE-TOKEN": token})
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            items, page = json.load(resp), resp.headers.get("X-Next-Page", "")
+        for it in items:
+            sid = f"GL-{it['iid']}"
+            ac = [m.group(1).strip() for m in re.finditer(r"^\s*[-*] \[[ xX]\]\s*(.+)$", it.get("description") or "", re.M)]
+            lab = {l.split("::")[0]: l.split("::", 1)[1] for l in it.get("labels", []) if "::" in l}
+            s = {"id": sid, "title": it["title"], "version": it["updated_at"][:10], "priority": lab.get("priority", ""),
+                 "service_function": lab.get("fonction", ""), "actor": "", "preconditions": [], "business_rules": [],
+                 "inputs": [], "expected_result": "", "alternatives": [], "errors": [], "sss_refs": [], "ssdd_refs": [],
+                 "acceptance_criteria": _criteria(sid, ac),
+                 "source": {"type": "gitlab", "ref": it["web_url"]}, "needs_enrichment": True}
+            if lab.get("sprint") or (it.get("milestone") or {}).get("title"):
+                s["sprint"] = lab.get("sprint") or it["milestone"]["title"]
+            out.append(s)
     return out
 
 

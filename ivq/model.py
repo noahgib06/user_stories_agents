@@ -30,7 +30,9 @@ STORY_REQUIRED = ["id", "title", "version", "priority", "service_function", "acc
 
 
 def validate_story(s):
-    errs = [f"champ manquant: {k}" for k in STORY_REQUIRED if not s.get(k)]
+    # un macro-US peut ne porter ni fonction de service ni critères propres (ils viennent de ses US filles)
+    required = ["id", "title", "version", "priority"] if s.get("kind") == "macro" else STORY_REQUIRED
+    errs = [f"champ manquant: {k}" for k in required if not s.get(k)]
     for i, c in enumerate(s.get("acceptance_criteria") or []):
         if not isinstance(c, dict) or not c.get("id") or not c.get("text"):
             errs.append(f"critère #{i} sans id/text")

@@ -17,7 +17,7 @@ class Pipeline(unittest.TestCase):
         self.props = load_json(EX / "tests.proposed.json")["tests"]
 
     def test_ingest_criteria_ids(self):
-        s = load_json(Path(self.d) / "stories.json")[0]
+        s = next(x for x in load_json(Path(self.d) / "stories.json") if x["id"] == "US-101")
         self.assertEqual([c["id"] for c in s["acceptance_criteria"]], ["US-101-AC1", "US-101-AC2", "US-101-AC3"])
         self.assertEqual(len(s["inputs"]), 2)
 

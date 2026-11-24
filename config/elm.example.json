@@ -1,14 +1,19 @@
 {
-  "_doc": "Copier en config/elm.json (ignoré par git). Ne jamais y mettre de secret : ELM_USER / ELM_PASSWORD viennent de l environnement.",
+  "_doc": "Copier en config/elm.json (ignoré par git). Aucun secret ici : ELM_USER / ELM_PASSWORD viennent de l'environnement, et ELM_ENV=recette est obligatoire.",
   "base_url": "https://elm-recette.example.org/qm",
+  "auth_url": "",
   "project_area": "PROJET-RECETTE",
   "allowed_project_areas": ["PROJET-RECETTE"],
   "forbidden_url_substrings": ["prod", "production"],
-  "test_plan_url": "",
+  "suite_group_by": "function",
+  "plan_by": "campaign",
   "creation_factories": {
+    "testplan": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.planning.VersionedTestPlan",
     "testcase": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.planning.VersionedTestCase",
     "testscript": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.planning.VersionedTestScript",
-    "testsuite": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.planning.VersionedTestSuite"
+    "testsuite": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.planning.VersionedTestSuite",
+    "testexecutionrecord": "https://elm-recette.example.org/qm/oslc_qm/contexts/XXXX/resources/com.ibm.rqm.execution.TestcaseExecutionRecord"
   },
+  "link_predicates": {},
   "requirement_base_url": "https://elm-recette.example.org/rm/resources/"
 }

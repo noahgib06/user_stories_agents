@@ -1,4 +1,5 @@
 """Journal d'audit append-only (JSONL) avec chaînage de hash."""
+import getpass
 import hashlib
 import json
 from datetime import datetime, timezone
@@ -13,8 +14,12 @@ def log(workspace, action, actor, **details):
         lines = p.read_text(encoding="utf-8").strip().splitlines()
         if lines:
             prev = json.loads(lines[-1])["hash"]
+    try:
+        os_user = getpass.getuser()
+    except Exception:
+        os_user = "?"
     entry = {"ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-             "action": action, "actor": actor, **details, "prev": prev}
+             "action": action, "actor": actor, "os_user": os_user, **details, "prev": prev}
     entry["hash"] = hashlib.sha256(json.dumps(entry, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     with p.open("a", encoding="utf-8") as f:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")

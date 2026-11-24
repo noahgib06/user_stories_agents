@@ -44,6 +44,15 @@ Les listes dans une cellule CSV/Excel sont séparées par ` | ` ; critères : `A
 - **Recette uniquement** : `allowed_project_areas`, refus d'URL « prod », `ELM_ENV=recette`, `--confirm`, compte technique via `ELM_USER`/`ELM_PASSWORD` (permissions minimales côté ELM).
 - **Audit** : `workspace/journal.jsonl` (source, décision, version, date, statut), chaîné par hash (`audit-verify`). Les permissions opencode limitent aussi chaque agent à ses commandes/fichiers ; `review-set`/`review-apply` ne sont autorisés à aucun agent.
 
-## À adapter / valider sur votre ELM
-Les URL des fabriques de création QM (`config/elm.json`), les prédicats OSLC et les propriétés `ivq:*` (à mapper vers vos attributs personnalisés) sont des hypothèses standard OSLC QM 2.0 : à tester sur le projet de recette. Non couvert en v1 : Execution Records, liens défauts, extraction native DOORS/Word (faite par l'agent), authentification form-based JAS/OAuth.
-Le modèle (`model:` dans les agents) n'est pas fixé : il suit votre configuration opencode.
+## Fonctions complémentaires
+- **Macro-US** (`Type=macro`, `Parent`) : ligne de synthèse dans la couverture ; anomalies si parent inconnu ou macro sans enfant.
+- **SSS / SSDD** : `ingest-refs examples/refs.csv` ; liens OSLC et option `require_sss`/`require_ssdd` dans `config/test-model.json`.
+- **Traçabilité** : `trace` → `workspace/traceability.csv` (US → fonction → test → statut → défauts).
+- **Publication ELM** : Test Plan, Test Script, Test Case, Test Suite (`--group-by function|sprint|campaign|module`), Execution Records (`--with-executions`), mise à jour avec ETag (conflit 412 = jamais d'écrasement), JAS form-login.
+- **Défauts** : `link-defect <TC> <url>` (la création/résultat d'exécution se fait dans ELM).
+- **Audit génération** : `merge --model --prompt-file --software-version` archive le prompt (sha256) dans `workspace/prompts/`.
+- **Relecteurs** : `config/reviewers.json` (liste blanche IVQ/PO, voir `reviewers.example.json`).
+- **Datasets** : `datasets [--xlsx]` (xlsx nécessite `pip install -r requirements.txt`).
+
+## À valider chez vous
+Testé : 14 tests unitaires/intégration (faux serveur ELM), config/agents chargés par `opencode2`. **Non testé** : un vrai ELM (URL des fabriques, prédicats OSLC, propriétés `ivq:*`, JAS/OAuth réel) et l'exécution LLM dans opencode. `--by` n'est pas une authentification cryptographique. Le modèle (`model:`) suit votre config opencode.

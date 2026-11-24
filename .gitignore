@@ -7,3 +7,4 @@ elm_out/
 config/elm.json
 sources/*
 !sources/.gitkeep
+config/reviewers.json

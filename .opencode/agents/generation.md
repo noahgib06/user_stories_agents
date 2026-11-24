@@ -4,6 +4,7 @@ mode: subagent
 steps: 40
 permissions:
   - { action: edit, resource: "workspace/tests.proposed.json", effect: allow }
+  - { action: edit, resource: "workspace/generation_prompt.md", effect: allow }
   - { action: shell, resource: "python3 -m ivq merge *", effect: allow }
   - { action: shell, resource: "python3 -m ivq validate *", effect: allow }
   - { action: shell, resource: "python3 -m ivq datasets *", effect: allow }
@@ -18,5 +19,5 @@ Sortie : `workspace/tests.proposed.json` → `{"tests":[...]}` (format dans `AGE
 - `generator` : `{"agent":"generation","model":"<modèle utilisé>"}` ; `story_version` = version de la fiche source.
 - Information manquante : pas de test spéculatif, liste la question.
 
-Une fois le fichier écrit : `python3 -m ivq merge` (entrée en `Brouillon`, jamais `Validé`). Corrige les rejets et relance.
+Écris aussi ton prompt/consigne dans `workspace/generation_prompt.md` (audit). Une fois le fichier écrit : `python3 -m ivq merge --model <ton modèle> --prompt-file workspace/generation_prompt.md --software-version <version>` (entrée en `Brouillon`, jamais `Validé`). Corrige les rejets et relance.
 Si le Contrôle remonte des anomalies, corrige les tests concernés (même id ⇒ nouvelle version, historique conservé).

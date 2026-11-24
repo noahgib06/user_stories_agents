@@ -1,0 +1,7 @@
+{
+  "_doc": "Copier en config/reviewers.json pour restreindre la validation aux relecteurs habilités (rôles IVQ ou PO). Sans ce fichier, tout nom est accepté.",
+  "reviewers": [
+    {"name": "Prénom Nom", "role": "IVQ"},
+    {"name": "Prénom Nom (PO)", "role": "PO"}
+  ]
+}

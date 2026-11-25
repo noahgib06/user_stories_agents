@@ -264,6 +264,27 @@ class Features(Base):
         store.export_datasets(self.d, xlsx=True)
         self.assertTrue((Path(self.d) / "datasets" / "datasets.xlsx").exists())
 
+    def test_docx_export_with_and_without_template(self):
+        import zipfile
+        from ivq import docx_export
+        files = [Path(f) for f in docx_export.export(self.d)]
+        self.assertTrue(files and all(f.exists() for f in files))
+        self.assertTrue((Path(self.d) / "features").is_dir())
+        self.assertIn("Scenario: TC-US-101-NOM-01", zipfile.ZipFile(files[0]).read("word/document.xml").decode())
+        tpl = Path(self.d) / "tpl.docx"
+        ns = docx_export.W_NS
+        with zipfile.ZipFile(tpl, "w") as z:
+            z.writestr("word/document.xml", f'<w:document xmlns:w="{ns}"><w:body><w:p><w:r><w:t>Titre</w:t></w:r></w:p>'
+                       '<w:p><w:r><w:t>{{GHE</w:t></w:r><w:r><w:t>RKIN}}</w:t></w:r></w:p><w:sectPr/></w:body></w:document>')
+            z.writestr("word/header1.xml", "<h/>")
+        out = docx_export.write_docx(Path(self.d) / "o.docx", "Feature: X\nScenario: Y\nGiven a\n", tpl)
+        with zipfile.ZipFile(out) as z:
+            doc = z.read("word/document.xml").decode()
+            self.assertIn("word/header1.xml", z.namelist())
+        self.assertIn("Titre", doc)
+        self.assertIn("Scenario: Y", doc)
+        self.assertNotIn("GHE", doc)
+
 
 class GitLabHandler(BaseHTTPRequestHandler):
     def log_message(self, *a):

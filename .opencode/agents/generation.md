@@ -9,6 +9,8 @@ permissions:
   - { action: shell, resource: "python3 -m ivq merge *", effect: allow }
   - { action: shell, resource: "python3 -m ivq validate *", effect: allow }
   - { action: shell, resource: "python3 -m ivq datasets *", effect: allow }
+  - { action: shell, resource: "python3 -m ivq gherkin*", effect: allow }
+  - { action: shell, resource: "python3 -m ivq docx*", effect: allow }
 ---
 Tu es l'**Agent Génération de Tests** (priorité 0). Charge le skill `ivq-test-matrix` avant de générer.
 Entrées : `workspace/stories.json`, `workspace/model.json`, `config/test-model.json`.

@@ -61,7 +61,8 @@ Les listes dans une cellule CSV/Excel sont séparées par ` | ` ; critères : `A
 - **Défauts** : `link-defect <TC> <url>` (la création/résultat d'exécution se fait dans ELM).
 - **Audit génération** : `merge --model --prompt-file --software-version` archive le prompt (sha256) dans `workspace/prompts/`.
 - **Relecteurs** : `config/reviewers.json` (liste blanche IVQ/PO, voir `reviewers.example.json`).
+- **Gherkin / Word** : `gherkin` (workspace/features/*.feature) et `docx [--single] [--template f.docx]` ; généré à chaque `merge`. Un modèle Word placé dans `templates/` est repris à l'identique, les scénarios remplacent `{{GHERKIN}}` (sinon fin du document) ; tests `Rejeté` exclus.
 - **Datasets** : `datasets [--xlsx]` (xlsx nécessite `pip install -r requirements.txt`).
 
 ## À valider chez vous
-Testé : 17 tests unitaires/intégration (faux serveur ELM), config/agents chargés par `opencode2`. **Non testé** : un vrai ELM (URL des fabriques, prédicats OSLC, propriétés `ivq:*`, JAS/OAuth réel) et l'exécution LLM dans opencode. `--by` n'est pas une authentification cryptographique. Le modèle (`model:`) suit votre config opencode.
+Testé : 18 tests unitaires/intégration (faux serveur ELM), config/agents chargés par `opencode2`. **Non testé** : un vrai ELM (URL des fabriques, prédicats OSLC, propriétés `ivq:*`, JAS/OAuth réel) et l'exécution LLM dans opencode. `--by` n'est pas une authentification cryptographique. Le modèle (`model:`) suit votre config opencode.

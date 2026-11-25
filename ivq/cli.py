@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-from . import audit, coverage, elm, ingest, nextstep, store
+from . import audit, coverage, docx_export, elm, gherkin, ingest, nextstep, store
 from .model import ROOT, load_json, load_model, save_json, validate_story, validate_test
 
 REVIEWERS = ROOT / "config" / "reviewers.json"
@@ -53,6 +53,10 @@ def build_parser():
     p.add_argument("--by", required=True)
     p = sub.add_parser("datasets")
     p.add_argument("--xlsx", action="store_true")
+    sub.add_parser("gherkin", help="exporte les scénarios Gherkin (workspace/features/)")
+    p = sub.add_parser("docx", help="exporte les scénarios Gherkin en .docx (template de templates/ si présent)")
+    p.add_argument("--template", help="modèle .docx explicite (sinon premier .docx de templates/)")
+    p.add_argument("--single", action="store_true", help="regroupe toutes les US dans workspace/tests_all.docx")
     p = sub.add_parser("publish")
     p.add_argument("--config", default=str(ROOT / "config" / "elm.json"))
     p.add_argument("--confirm", action="store_true", help="publication réelle (sinon dry-run)")
@@ -144,6 +148,14 @@ def main(argv=None):
         print(store.export_datasets(ws, a.xlsx))
         return 0
 
+    if a.cmd == "gherkin":
+        files = gherkin.build(ws, load_json(ws / "stories.json", []), load_json(ws / "tests.json", []))
+        print("\n".join(files) if files else "aucun test à exporter")
+        return 0
+    if a.cmd == "docx":
+        files = docx_export.export(ws, template=a.template, single=a.single)
+        print("\n".join(files) if files else "aucun test à exporter")
+        return 0
     if a.cmd == "publish":
         rep = elm.publish(ws, load_json(a.config), live=a.confirm, with_suites=not a.no_suites,
                           with_plan=not a.no_plan, with_executions=a.with_executions, group_by=a.group_by)

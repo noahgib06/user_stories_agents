@@ -6,7 +6,7 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import audit
+from . import audit, docx_export, gherkin
 from .model import load_json, save_json, validate_test
 
 VOLATILE = {"status", "version", "history", "review", "elm", "defects"}
@@ -68,6 +68,9 @@ def merge(ws, proposed, model, actor="orchestrateur", model_name=None, prompt=No
             tests[p["id"]] = p
             res["updated"].append(p["id"])
     save_json(ws / "tests.json", list(tests.values()))
+    stories = load_json(ws / "stories.json", [])
+    gherkin.build(ws, stories, list(tests.values()))
+    docx_export.build(ws, stories, list(tests.values()))
     audit.log(ws, "merge", actor, model=model_name, prompt_sha256=prompt_sha,
               software_version=software_version, **{k: v for k, v in res.items()})
     return res
